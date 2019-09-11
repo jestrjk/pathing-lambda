@@ -14,11 +14,9 @@ exports.main = async function ( event, context ) {
   let path = new Path( maze, playerStart, goal )
   path.findPath()
 
-  return {
-    statusCode: 200,
-    headers: {},
-    body: JSON.stringify( maze )
-  }
+  return await new Promise(( resolve,reject ) => {
+    resolve( maze )
+  })
 }
 
 

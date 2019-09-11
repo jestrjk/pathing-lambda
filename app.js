@@ -1,5 +1,8 @@
-const lambda = require( './lambda/find-path.js' ) 
+const localLambdaFunction = require( './lambda/find-path.js' ) 
+const AWS = require ( 'aws-sdk')
 const { PerformanceObserver, performance } = require('perf_hooks');
+
+const lambdaService = new AWS.Lambda()
 
 async function app() {
 
@@ -8,20 +11,17 @@ async function app() {
   var event = {}
   var context = {}
 
-  var lambdaResult = await lambda.main( event, context )
-  console.log( lambdaResult.body ) 
+  // LOCAL
+  localLambdaFunction.main( event, context ).then ( (data) => {
+    display( data )
+  })
 
-  var maze = JSON.parse( lambdaResult.body )
-
-  // let length = path.pathTaken.length
-  // if ( length > 1 ) {
-  //   console.log( `Length traveled: ${path.pathTaken.length} `)
-  // }
-  // else {
-  //   console.log( `No path, so sad, length travled: ${path.pathTaken.length}`)
-  // }
-  
-  display( maze )
+  // ASYNC LAMBDA
+  lambdaService.invoke( { FunctionName: 'pathing-lambda-pathinglambdaC958412A-1WMVM78U8IESK'}).promise().then( (data) => {
+    
+    let maze = JSON.parse( data.Payload )
+    display( maze )
+  })
 
 };
 

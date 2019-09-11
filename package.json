@@ -1,0 +1,22 @@
+{
+  "name": "pathing-lambda",
+  "version": "1.0.0",
+  "description": "Clone it, then",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jestrjk/pathing-lambda.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jestrjk/pathing-lambda/issues"
+  },
+  "homepage": "https://github.com/jestrjk/pathing-lambda#readme",
+  "dependencies": {
+    "aws-sdk": "^2.526.0"
+  }
+}
