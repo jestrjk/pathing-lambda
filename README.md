@@ -14,7 +14,7 @@ We are using a lambda function to run the path finding algorithm as a demonstrat
 - Lambda vs Local
 - Improved Lambda Syntax
 - Optimization
-- 
+- Pricing is laughable.
 
 ## Configuring
 
