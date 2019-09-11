@@ -4,10 +4,16 @@ var readline = require( 'readline' )
 const { PerformanceObserver, performance } = require('perf_hooks');
 
 async function app() {
-    
-  let maze = new Maze({ wallPercentage: .25, height: 100, width: 100 })
+
+  let mazeHeight = 50 
+  let mazeWidth = 100
+
+  let maze = new Maze({ wallPercentage: .25, width: mazeWidth, height: mazeHeight })
   
-  let path = new Path( maze )
+  let playerStart = { x: randInt(mazeWidth/2), y: randInt(mazeHeight/2) }
+  let goal = { x: randInt(mazeWidth/2) + mazeWidth/2, y: randInt(mazeHeight/2)+mazeHeight/2 }
+
+  let path = new Path( maze, playerStart, goal )
 
   var findStart = performance.now()
   path.findPath()
@@ -32,6 +38,10 @@ function sleep(ms){
   return new Promise(resolve=>{
       setTimeout(resolve,ms)
   })
+}
+
+function randInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
 }
 
 app() ;

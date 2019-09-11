@@ -1,7 +1,11 @@
 var TileCoordinates = require('./lambda/tileCoordinates')
 
 class Maze {
-  constructor( { wallPercentage = .25, width = randInt(24)+12, height = randInt(8)+8 } = {} ) {
+  constructor( { 
+    wallPercentage = .25, 
+    width = randInt(24)+12, 
+    height = randInt(8)+8 
+  } = {} ) {
   
     this.tileSet = {
       wall: '█',
@@ -11,7 +15,7 @@ class Maze {
       goal: '$',
       open: ' ',
     }
-
+    
     this.wallPercentage = wallPercentage
     this.width = width
     this.height = height
@@ -33,10 +37,7 @@ class Maze {
       this.setTile( new TileCoordinates( randInt( this.width ), randInt( this.height ) ), this.tileSet.wall )
     }
 
-    // Set the player start point, for visual reference
-    this.setTile( new TileCoordinates( 0,0 ) , this.tileSet.player )
-    // Set the ending open, just in case our random wall splatting covered it up. 
-    this.setTile( new TileCoordinates(this.width-1, this.height-1), this.tileSet.open )
+
   }
   
   tile(tc) {

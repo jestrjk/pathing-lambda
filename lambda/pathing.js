@@ -2,13 +2,22 @@
 var TileCoordinates = require('./tileCoordinates')
 
 class Path {
-  constructor( maze ) {
-    this.start = new TileCoordinates( 0, 0 ) 
-    this.end = new TileCoordinates( maze.width-1, maze.height-1 )
+  constructor( maze, playerStart = { x: 0, y: 0 }, goal ) {
+    this.playerStart = new TileCoordinates( playerStart.x, playerStart.y ) 
+    if ( goal ) {
+      this.goal = new TileCoordinates( goal.x, goal.y )
+    } 
+    else {
+      this.goal = new TileCoordinates( maze.width-1, maze.height-1 )
+    }
 
-    this.pathTaken = [ this.start ]
+    this.pathTaken = [ this.playerStart ]
     this.maze = maze
     
+    // Set the player start point, for visual reference
+    maze.setTile( this.playerStart , maze.tileSet.player )
+    // Set the ending goal
+    maze.setTile( this.goal , maze.tileSet.goal )
   }
   
   currentCoords() {
@@ -28,18 +37,14 @@ class Path {
         this.backTrack()
       }
       else {
-        this.takeStep( step )
-        if ( step.equals( this.end ) ) {
-          this.maze.setTile( step, this.maze.tileSet.player )
+        this.pathTaken.push( step )
+        if ( step.equals( this.goal ) ) {
           stillMoreOptions = false
+          return 
         }
+        this.maze.setTile(step, this.maze.tileSet.path)
       }
     }
-  }
-
-  takeStep( step ) {
-    this.maze.setTile(step, this.maze.tileSet.path)
-    this.pathTaken.push( step )  
   }
 
   backTrack() {
@@ -88,13 +93,18 @@ class Path {
 
   tileIsOpen( tileCoordinates ) {
 
-    if ( this.maze.tile(tileCoordinates) == this.maze.tileSet.open ) return true
+    if ( 
+      this.maze.tile(tileCoordinates) == this.maze.tileSet.open || 
+      this.maze.tile(tileCoordinates) == this.maze.tileSet.goal 
+    ) { 
+      return true 
+    }
 
     return false 
   }
 
   distanceToEnd( coords ) {
-    let distance = Math.sqrt( Math.pow(this.end.x - coords.x,2) + Math.pow(this.end.y - coords.y,2) )
+    let distance = Math.sqrt( Math.pow(this.goal.x - coords.x,2) + Math.pow(this.goal.y - coords.y,2) )
     return distance
   }
 }
