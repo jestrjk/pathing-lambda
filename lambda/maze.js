@@ -1,4 +1,4 @@
-var TileCoordinates = require('./lambda/tileCoordinates')
+var TileCoordinates = require('./tileCoordinates')
 
 class Maze {
   constructor( { 
@@ -57,12 +57,7 @@ class Maze {
     return tc.y*this.width + tc.x
   }
   
-  display() {
-    console.log( `${this.width}x${this.height} @ ${this.wallPercentage * 100}% walls` )
-    for( let y = 0 ; y < this.height ; y++ ) {
-      console.log( this.tiles.slice( y*this.width, y*this.width + this.width ).join('') )
-    }
-  }
+  
 }
 
 function randInt(max) {

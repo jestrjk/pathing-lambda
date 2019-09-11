@@ -1,36 +1,27 @@
-const Maze = require( './maze.js' ) 
-const Path = require( './lambda/pathing.js' ) 
-var readline = require( 'readline' )
+const lambda = require( './lambda/find-path.js' ) 
 const { PerformanceObserver, performance } = require('perf_hooks');
 
 async function app() {
 
-  let mazeHeight = 50 
-  let mazeWidth = 100
+  // var findStart = performance.now()
+  // var findEnd = performance.now()
+  var event = {}
+  var context = {}
 
-  let maze = new Maze({ wallPercentage: .25, width: mazeWidth, height: mazeHeight })
+  var lambdaResult = await lambda.main( event, context )
+  console.log( lambdaResult.body ) 
+
+  var maze = JSON.parse( lambdaResult.body )
+
+  // let length = path.pathTaken.length
+  // if ( length > 1 ) {
+  //   console.log( `Length traveled: ${path.pathTaken.length} `)
+  // }
+  // else {
+  //   console.log( `No path, so sad, length travled: ${path.pathTaken.length}`)
+  // }
   
-  let playerStart = { x: randInt(mazeWidth/2), y: randInt(mazeHeight/2) }
-  let goal = { x: randInt(mazeWidth/2) + mazeWidth/2, y: randInt(mazeHeight/2)+mazeHeight/2 }
-
-  let path = new Path( maze, playerStart, goal )
-
-  var findStart = performance.now()
-  path.findPath()
-  var findEnd = performance.now()
-
-
-  let length = path.pathTaken.length
-  if ( length > 1 ) {
-    console.log( `Length traveled: ${path.pathTaken.length} `)
-  }
-  else {
-    console.log( `No path, so sad, length travled: ${path.pathTaken.length}`)
-  }
-  
-  maze.display()
-
-  console.log( `finding the path took: ${findEnd - findStart}` )
+  display( maze )
 
 };
 
@@ -42,6 +33,13 @@ function sleep(ms){
 
 function randInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
+}
+
+function display(maze) {
+  console.log( `${maze.width}x${maze.height} @ ${maze.wallPercentage * 100}% walls` )
+  for( let y = 0 ; y < maze.height ; y++ ) {
+    console.log( maze.tiles.slice( y*maze.width, y*maze.width + maze.width ).join('') )
+  }
 }
 
 app() ;
