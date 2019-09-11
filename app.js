@@ -6,7 +6,7 @@ const lambdaService = new AWS.Lambda()
 
 async function app() {
   
-  var numberOfIterations = 50
+  var numberOfIterations = 20
 
   performance.mark( 'local 1x start')
   // LOCAL
@@ -20,9 +20,9 @@ async function app() {
   for( let i = 0 ; i < numberOfIterations ; i++ ) {
     await localLambdaFunction.main( {}, {} )
   }
-  performance.mark( `local ${numberOfIterations}x end` )
-
+ 
   // ASYNC LAMBDA
+  performance.mark( `local ${numberOfIterations}x end` )
   await lambdaService.invoke( { FunctionName: 'pathing-lambda-pathinglambdaC958412A-1WMVM78U8IESK'}).promise().then( (data) => {
     
     let maze = JSON.parse( data.Payload )
@@ -35,14 +35,19 @@ async function app() {
   
   var mazePromises = []
 
+  performance.mark( 'lambda invocations')
   for( let i = 0 ; i < numberOfIterations ; i++ ) {
     mazePromises.push( lambdaService.invokeAsync( { InvokeArgs: JSON.stringify({nothing: 'here'} ), FunctionName: 'pathing-lambda-pathinglambdaC958412A-1WMVM78U8IESK'}).promise())
   }
+  performance.mark( 'lambda invocations end')
+
+  console.log( "Starting multiple iterations of each and measuring performance" )
 
   Promise.all( mazePromises ).then ( () => {
     performance.mark( `LAMBDA ${numberOfIterations}x End`)
     performance.measure( 'local 1x', 'local 1x start', 'local 1x end')
-    performance.measure( `LAMBDA ${numberOfIterations}x`, `LAMBDA ${numberOfIterations}x Start`, `LAMBDA ${numberOfIterations}x End`)
+    performance.measure( `lambda invokes`, 'lambda invocations start', 'lambda invocations end')
+    performance.measure( `LAMBDA Results ${numberOfIterations}x`, `LAMBDA ${numberOfIterations}x Start`, `LAMBDA ${numberOfIterations}x End`)
     performance.measure( `local ${numberOfIterations}x`, `local ${numberOfIterations}x start`, `local ${numberOfIterations}x end`)
   })
 

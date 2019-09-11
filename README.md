@@ -8,6 +8,14 @@ Clone it, then
 
 We are using a lambda function to run the path finding algorithm as a demonstration.
 
+## Things to talk about
+
+- Performance in Node
+- Lambda vs Local
+- Improved Lambda Syntax
+- Optimization
+- 
+
 ## Configuring
 
 You can configure start and end in the code, its not too hard. but right now its locked at
