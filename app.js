@@ -5,26 +5,52 @@ const { PerformanceObserver, performance } = require('perf_hooks');
 const lambdaService = new AWS.Lambda()
 
 async function app() {
+  
+  var numberOfIterations = 50
 
-  // var findStart = performance.now()
-  // var findEnd = performance.now()
-  var event = {}
-  var context = {}
-
+  performance.mark( 'local 1x start')
   // LOCAL
-  localLambdaFunction.main( event, context ).then ( (data) => {
+  localLambdaFunction.main( {}, {} ).then( (data) => {
     display( data )
   })
 
+  performance.mark( 'local 1x end' )
+
+  performance.mark( `local ${numberOfIterations}x start` )
+  for( let i = 0 ; i < numberOfIterations ; i++ ) {
+    await localLambdaFunction.main( {}, {} )
+  }
+  performance.mark( `local ${numberOfIterations}x end` )
+
   // ASYNC LAMBDA
-  lambdaService.invoke( { FunctionName: 'pathing-lambda-pathinglambdaC958412A-1WMVM78U8IESK'}).promise().then( (data) => {
+  await lambdaService.invoke( { FunctionName: 'pathing-lambda-pathinglambdaC958412A-1WMVM78U8IESK'}).promise().then( (data) => {
     
     let maze = JSON.parse( data.Payload )
+    console.log( `LAMBDA: `)
     display( maze )
+  })
+
+  
+  performance.mark( `LAMBDA ${numberOfIterations}x Start` )
+  
+  var mazePromises = []
+
+  for( let i = 0 ; i < numberOfIterations ; i++ ) {
+    mazePromises.push( lambdaService.invokeAsync( { InvokeArgs: JSON.stringify({nothing: 'here'} ), FunctionName: 'pathing-lambda-pathinglambdaC958412A-1WMVM78U8IESK'}).promise())
+  }
+
+  Promise.all( mazePromises ).then ( () => {
+    performance.mark( `LAMBDA ${numberOfIterations}x End`)
+    performance.measure( 'local 1x', 'local 1x start', 'local 1x end')
+    performance.measure( `LAMBDA ${numberOfIterations}x`, `LAMBDA ${numberOfIterations}x Start`, `LAMBDA ${numberOfIterations}x End`)
+    performance.measure( `local ${numberOfIterations}x`, `local ${numberOfIterations}x start`, `local ${numberOfIterations}x end`)
   })
 
 };
 
+///
+/// Helper Functions
+///
 function sleep(ms){
   return new Promise(resolve=>{
       setTimeout(resolve,ms)
@@ -41,5 +67,10 @@ function display(maze) {
     console.log( maze.tiles.slice( y*maze.width, y*maze.width + maze.width ).join('') )
   }
 }
+
+const obs = new PerformanceObserver((items) => {
+  items.getEntries().forEach ( entry => console.log( `${entry.name}: ${entry.duration}` ) ) 
+});
+obs.observe({ entryTypes: ['measure'] });
 
 app() ;
